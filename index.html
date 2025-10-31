@@ -1,0 +1,1405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us - Gods Life Health Care</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Custom animations */
+        @keyframes slideInRight { 
+            0% { transform: translateX(20px) scale(0.98); opacity: 0; filter: blur(5px); } 
+            100% { transform: translateX(0) scale(1); opacity: 1; filter: blur(0); } 
+        }
+        @keyframes slideInLeft { 
+            0% { transform: translateX(-20px) scale(0.98); opacity: 0; filter: blur(5px); } 
+            100% { transform: translateX(0) scale(1); opacity: 1; filter: blur(0); } 
+        }
+        .text-animate-meet, .text-animate-team { 
+            animation: slideInRight 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) both; 
+            animation-delay: 0.1s; 
+        }
+        .text-animate-our { 
+            animation: slideInLeft 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) both; 
+            animation-delay: 0.3s; 
+        }
+        .content-fade-in { 
+            animation: fadeIn 1s ease-out 0.5s both; 
+        }
+        @keyframes fadeIn { 
+            from { opacity: 0; transform: translateY(10px); } 
+            to { opacity: 1; transform: translateY(0); } 
+        }
+        
+        /* Profile Card Styling */
+        .profile-card {
+            position: absolute;
+            top: 50%; left: 40%; transform: translate(-50%, -50%);
+            width: 350px; height: 500px; 
+            background: white; border-radius: 16px; box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+            padding: 0 0 20px 0; box-sizing: border-box; 
+            display: flex; flex-direction: column; align-items: center;
+            transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            opacity: 0;
+            transform: translate(calc(-50% + 100px), -50%) scale(0.9);
+            cursor: pointer;
+        }
+        .profile-card.active { 
+            opacity: 1; transform: translate(-50%, -50%) scale(1); z-index: 4; transition-delay: 0.1s; 
+        }
+        .profile-card.next-1 { 
+            opacity: 0.8; transform: translate(calc(-50% + 130px), -50%) scale(0.9); z-index: 3; transition-delay: 0.2s; 
+        }
+        .profile-card.next-2 { 
+            opacity: 0.6; transform: translate(calc(-50% + 260px), -50%) scale(0.8); z-index: 2; transition-delay: 0.3s; 
+        }
+        .profile-card.hidden { 
+            opacity: 0.4; transform: translate(calc(-50% + 300px), -50%) scale(0.7); z-index: 1; transition-delay: 0s; 
+        }
+        
+        .profile-image { 
+            width: 100%; height: 70%; border-radius: 16px 16px 0 0; object-fit: cover; 
+            transition: all 0.4s ease 0.2s, transform 0.4s ease 0.2s;
+            transform: translateY(20px) scale(1.02); opacity: 0; 
+        }
+        .profile-card.active .profile-image { 
+            transform: translateY(0) scale(1); opacity: 1; 
+        }
+
+        .profile-content { 
+            width: 100%; height: 30%; padding: 15px 25px 0 25px; box-sizing: border-box;
+            display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+        }
+
+        /* Detail View Overlay */
+        #detail-view-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: #f9f6f0;
+            z-index: 100;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+            display: flex;
+            flex-direction: row;
+        }
+        #detail-view-overlay.visible {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .detail-left {
+            width: 50%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 5%;
+            box-sizing: border-box;
+            position: relative;
+            background: #f9f6f0;
+            overflow: hidden;
+        }
+
+        .detail-right {
+            width: 50%;
+            height: 100%;
+            background-color: #C3C5B5;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 5% 8%;
+            box-sizing: border-box;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #detail-image {
+            position: absolute;
+            transition: all 1s cubic-bezier(0.645, 0.045, 0.355, 1);
+            z-index: 101;
+            object-fit: cover;
+            border-radius: 12px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+        }
+        
+        .detail-left.expanded-image-final #detail-image {
+            width: 90% !important;
+            height: 90% !important;
+            max-width: 600px;
+            max-height: 600px;
+            position: relative !important;
+            top: auto !important;
+            left: auto !important;
+            transform: none !important;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+        }
+
+        .name-container {
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+            font-size: 4rem;
+            line-height: 1.1;
+            margin-bottom: 2rem;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s cubic-bezier(0.215, 0.61, 0.355, 1) 0.5s, transform 0.8s cubic-bezier(0.215, 0.61, 0.355, 1) 0.5s;
+        }
+
+        .detail-right.visible-content .name-container {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .name-part {
+            display: inline-block;
+        }
+
+        .name-first {
+            color: #f9f6f0;
+        }
+
+        .name-last {
+            color: #1e1e1e;
+        }
+
+        .detail-description-content {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 1s cubic-bezier(0.215, 0.61, 0.355, 1) 0.9s, transform 1s cubic-bezier(0.215, 0.61, 0.355, 1) 0.9s;
+            max-width: 600px;
+        }
+
+        .detail-right.visible-content .detail-description-content {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 2rem;
+            right: 2rem;
+            z-index: 102;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px solid #1e1e1e;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .close-btn:hover {
+            background: #1e1e1e;
+            color: #f9f6f0;
+        }
+
+        .mission-section {
+            padding-top: 8rem; 
+            padding-bottom: 8rem; 
+        }
+
+        .vision-section {
+            padding-top: 8rem; 
+            padding-bottom: 8rem; 
+        }
+        
+        /* Mobile menu styles */
+        .mobile-menu {
+            display: none;
+        }
+        .mobile-menu.active {
+            display: block;
+        }
+        
+        /* Animation Classes */
+        .animate-on-scroll {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+
+        .animate-on-scroll.animated {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .fade-in-left {
+            opacity: 0;
+            transform: translateX(-50px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+
+        .fade-in-left.animated {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .fade-in-right {
+            opacity: 0;
+            transform: translateX(50px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+
+        .fade-in-right.animated {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .scale-in {
+            opacity: 0;
+            transform: scale(0.9);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+
+        .scale-in.animated {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .stagger-animation > * {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+
+        .stagger-animation.animated > * {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .stagger-animation.animated > *:nth-child(1) { transition-delay: 0.1s; }
+        .stagger-animation.animated > *:nth-child(2) { transition-delay: 0.2s; }
+        .stagger-animation.animated > *:nth-child(3) { transition-delay: 0.3s; }
+        .stagger-animation.animated > *:nth-child(4) { transition-delay: 0.4s; }
+        .stagger-animation.animated > *:nth-child(5) { transition-delay: 0.5s; }
+        
+        /* Key Features Animation */
+        .feature-item {
+            transition: all 0.5s ease;
+            transform: scale(0.95);
+            opacity: 0.8;
+            /* Add these lines to reduce horizontal space */
+            padding-left: 12px !important;
+            padding-right: 12px !important;
+            max-width: 280px;
+            margin: 0 auto;
+        }
+
+        /* Or if you want even more compact */
+        .feature-item.compact {
+            padding: 8px 10px !important;
+            max-width: 240px;
+            font-size: 0.9rem;
+        }
+        
+        .feature-item.inactive {
+            transform: scale(0.95);
+            opacity: 0.8;
+        }
+        
+        /* Updated Key Features Animation */
+        .feature-item {
+            transition: all 0.5s ease;
+            transform: scale(0.95);
+            opacity: 0.8;
+            max-width: 280px;
+            margin: 0 auto;
+        }
+        
+        .feature-item.active {
+            transform: scale(1);
+            opacity: 1;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+        
+        .feature-item.inactive {
+            transform: scale(0.95);
+            opacity: 0.8;
+        }
+        
+        /* Footer Animation */
+        .footer-section {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+        
+        .footer-section.animated {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .footer-section:nth-child(1) { transition-delay: 0.1s; }
+        .footer-section:nth-child(2) { transition-delay: 0.2s; }
+        .footer-section:nth-child(3) { transition-delay: 0.3s; }
+        .footer-section:nth-child(4) { transition-delay: 0.4s; }
+
+        /* Specialty Cards Styling */
+        .specialty-card {
+            display: inline-block;
+            background-color: #f0f9ff;
+            color: #0369a1;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin: 2px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Testimonials Section Styles */
+        .testimonials {
+            padding: 60px 0;
+            background: white;
+        }
+
+        .testimonials-container {
+            position: relative;
+            overflow: hidden;
+            margin-top: 40px;
+        }
+
+        .testimonial-wrapper {
+            display: flex;
+            transition: transform 0.5s ease;
+        }
+
+        .testimonial {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            background-color:  #f8f9fa;
+            border-radius: 10px;
+            padding: 30px;
+        }
+
+        .testimonial img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin: 0 auto 20px auto; 
+            border: 3px solid #3498db;
+            display: block;
+        }
+
+        .testimonial p {
+            font-style: italic;
+            color: #555;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .name {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+
+        .position {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+
+        /* Section Divider */
+        .section-divider {
+            height: 1px;
+            background: linear-gradient(to right, transparent, #eaeaea, transparent);
+            margin: 40px 0;
+        }
+
+        /* Mobile Responsive Styles */
+        @media (max-width: 1024px) {
+            .profile-card {
+                width: 300px;
+                height: 450px;
+                left: 50%;
+            }
+            
+            .name-container {
+                font-size: 3rem;
+            }
+            
+            .detail-left, .detail-right {
+                width: 100%;
+                height: 50%;
+            }
+            
+            #detail-view-overlay {
+                flex-direction: column;
+            }
+            
+            .detail-left.expanded-image-final #detail-image {
+                max-width: 400px;
+                max-height: 400px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .profile-card {
+                width: 280px;
+                height: 420px;
+            }
+            
+            .name-container {
+                font-size: 2.5rem;
+            }
+            
+            .detail-left.expanded-image-final #detail-image {
+                max-width: 300px;
+                max-height: 300px;
+            }
+            
+            .testimonial {
+                padding: 20px;
+            }
+            
+            .testimonial img {
+                width: 60px;
+                height: 60px;
+            }
+            
+            .feature-item {
+                max-width: 220px;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .profile-card {
+                width: 250px;
+                height: 380px;
+            }
+            
+            .name-container {
+                font-size: 2rem;
+            }
+            
+            .detail-left.expanded-image-final #detail-image {
+                max-width: 250px;
+                max-height: 250px;
+            }
+            
+            .testimonial {
+                padding: 15px;
+            }
+            
+            .testimonial p {
+                font-size: 0.9rem;
+            }
+            
+            .feature-item {
+                max-width: 200px;
+                font-size: 0.8rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .profile-card {
+                width: 220px;
+                height: 350px;
+            }
+            
+            .name-container {
+                font-size: 1.8rem;
+            }
+            
+            .detail-left.expanded-image-final #detail-image {
+                max-width: 200px;
+                max-height: 200px;
+            }
+            
+            .testimonial {
+                padding: 10px;
+            }
+            
+            .testimonial img {
+                width: 50px;
+                height: 50px;
+            }
+            
+            .feature-item {
+                max-width: 180px;
+                font-size: 0.75rem;
+            }
+        }
+    </style>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary-green': '#10b981',
+                        'primary-blue': '#2c3e50',
+                        'secondary-teal': '#3498db',
+                        'light-teal': '#13a5a5',
+                        'light-bg': '#f8f6f6',
+                        'card-bg': '#13a5a51a',
+                        'dark-text': '#1f2937',
+                        'footer-bg': '#2c3e50',
+                        'custom-blue': '#3498db',
+                        'custom-dark-blue': '#2980b9',
+                        'custom-dark': '#2c3e50',
+                        'custom-light-gray': '#f5f7fa',
+                        'custom-gray': '#777777',
+                        'custom-light': '#bdc3c7',
+                        'custom-teal': '#00a1ab',
+                        'custom-dark-teal': '#002c5f'
+                    },
+                    fontFamily: {
+                        'display': ['Playfair Display', 'serif'],
+                        'sans': ['Inter', 'sans-serif'],
+                        'inter': ['Inter', 'Segoe UI', 'sans-serif'],
+                        'playfair': ['Playfair Display', 'serif']
+                    },
+                    boxShadow: {
+                        'card': '0 10px 30px rgba(0, 0, 0, 0.08)',
+                        'partner': '0 5px 15px rgba(0, 0, 0, 0.1)',
+                        'partner-hover': '0 10px 25px rgba(0, 0, 0, 0.15)',
+                        'nav-btn': '0 4px 10px rgba(0, 0, 0, 0.1)',
+                        'nav-btn-hover': '0 6px 15px rgba(0, 0, 0, 0.15)'
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+
+<body class="font-inter text-gray-800 bg-custom-light-gray overflow-x-hidden">
+    <!-- Header -->
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <div class="container mx-auto px-4 max-w-7xl">
+            <div class="flex justify-between items-center py-4">
+                <div class="logo flex items-center gap-3">
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRN1iie8n5MkShNgEeBfpmQfPl2lCBqpYOnQg&s" alt="Gods Life Health Care" class="h-10 md:h-12 w-auto rounded-full">
+                    <div class="logo-text text-xl md:text-2xl font-bold text-custom-dark">Gods <span class="text-custom-blue">Life</span></div>
+                </div>
+                
+                <ul class="nav-menu hidden md:flex list-none gap-4 lg:gap-6 items-center ml-auto">
+                    <li><a href="#" class="no-underline text-custom-dark font-medium hover:text-custom-blue transition-colors duration-300 text-sm lg:text-base">Home</a></li>
+                    <li><a href="#" class="no-underline text-custom-dark font-medium hover:text-custom-blue transition-colors duration-300 text-sm lg:text-base">Services</a></li>
+                    <li><a href="#" class="no-underline text-custom-dark font-medium hover:text-custom-blue transition-colors duration-300 text-sm lg:text-base">Destinations</a></li>
+                    <li><a href="#" class="no-underline text-custom-dark font-medium hover:text-custom-blue transition-colors duration-300 text-sm lg:text-base">Doctors</a></li>
+                    <li><a href="#" class="no-underline text-custom-dark font-medium hover:text-custom-blue transition-colors duration-300 text-sm lg:text-base">Testimonials</a></li>
+                    <li><a href="#" class="no-underline text-custom-dark font-medium hover:text-custom-blue transition-colors duration-300 text-sm lg:text-base">About Us</a></li>
+                    <li><a href="#" class="no-underline text-custom-dark font-medium hover:text-custom-blue transition-colors duration-300 text-sm lg:text-base">Contact</a></li>
+                    <li><a href="#" class="btn bg-custom-blue text-white py-2 px-4 lg:px-5 rounded transition-colors duration-300 hover:bg-custom-dark-blue no-underline text-sm">Get Consultation</a></li>
+                </ul>
+
+                <div class="ham-icon md:hidden">
+                    <button id="mobile-menu-button" class="p-2">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Navigation -->
+        <div id="mobile-menu" class="mobile-menu md:hidden bg-white shadow-lg">
+            <ul class="py-4 px-6 space-y-4">
+                <li><a href="#" class="block text-primary-blue hover:text-secondary-teal font-medium">Home</a></li>
+                <li><a href="#" class="block text-primary-blue hover:text-secondary-teal font-medium">Services</a></li>
+                <li><a href="#" class="block text-primary-blue hover:text-secondary-teal font-medium">Destinations</a></li>
+                <li><a href="#" class="block text-primary-blue hover:text-secondary-teal font-medium">Doctors</a></li>
+                <li><a href="#" class="block text-primary-blue hover:text-secondary-teal font-medium">Testimonials</a></li>
+                <li><a href="#" class="block text-primary-blue hover:text-secondary-teal font-medium">About Us</a></li>
+                <li><a href="#" class="block text-primary-blue hover:text-secondary-teal font-medium">Contact</a></li>
+                <li><a href="#" class="block bg-secondary-teal text-white px-5 py-2 rounded font-medium text-center hover:bg-blue-700 transition">Get Consultation</a></li>
+            </ul>
+        </div>
+    </header>
+
+    <!-- Hero/About Section -->
+    <section class="py-16 px-4 md:px-8 lg:px-16 bg-white">
+        <div class="container mx-auto flex flex-col lg:flex-row items-center gap-12">
+            <div class="lg:w-1/2">
+                <span class="bg-light-teal text-white px-4 py-1 rounded-full text-sm font-medium">OUR STORY</span>
+                <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold mt-6 mb-4 text-primary-blue">
+                    Dedicated to Your <br><span class="text-light-teal italic">Health & Wellness</span>
+                </h1>
+                <br>
+                <p class="text-gray-600 mb-8 max-w-lg">
+                    At God's Life Healthcare, we believe that hope and healing go hand in hand. Our mission is to make world-class medical care accessible to everyone, wherever they are.
+                    We are more than a healthcare service. We're your partner in your wellness journey guiding, supporting, and caring for you every step of the way.
+                </p>
+                <div class="bg-card-bg p-4 rounded-lg">
+                    <div class="flex items-start gap-4">
+                        <i class="fa-solid fa-chart-line text-light-teal text-2xl mt-1"></i>
+                        <div>
+                            <h4 class="font-bold text-lg">Virtual consultation platform</h4>
+                            <p class="text-gray-600 mt-2">
+                                Patients can connect with expert doctors and specialists to discuss their health conditions, explore treatment options, and make informed decisions all before traveling.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <br>
+                <div class="bg-card-bg p-4 rounded-lg">
+                    <div class="flex items-start gap-4">
+                        <i class="fa-solid fa-chart-line text-light-teal text-2xl mt-1"></i>
+                        <div>
+                            <h4 class="font-bold text-lg">Virtual consultation platform</h4>
+                            <p class="text-gray-600 mt-2">
+                                Patients can connect with expert doctors and specialists to discuss their health conditions, explore treatment options, and make informed decisions all before traveling.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="lg:w-1/2 mt-10 lg:mt-0 flex justify-center">
+                <img src="./picture/family1.jpg" alt="happy family" class="rounded-2xl shadow-xl w-full max-w-md lg:max-w-lg">
+            </div>
+        </div>
+    </section>
+
+    <!-- Why Choose Us Section -->
+    <section class="py-16 px-4 md:px-8 lg:px-16 bg-gray-50">
+        <div class="container mx-auto">
+            <div class="flex flex-col lg:flex-row gap-12">
+                <div class="lg:w-1/2">
+                    <div class="mb-8">
+                        <img src="./picture/doctorpatient.jpg" alt="doctor with patient" class="rounded-2xl shadow-lg w-full h-full object-cover">
+                    </div>
+                </div>
+                <div class="lg:w-1/2">
+                    <h2 class="text-3xl md:text-4xl font-bold mb-6 text-primary-blue">Why Patients Choose God's Life?</h2>
+                    <p class="text-gray-600 mb-8">
+                        At God's Life Health Care, we go beyond borders to bring hope, healing, and expert care closer to you. Whether you're seeking treatment in India or connecting virtually from anywhere in the world, we make your health journey smooth, trusted, and personal.
+                    </p>
+                    
+                    <div class="bg-card-bg p-4 rounded-2xl w-[400px] mx-auto">
+                        <h3 class="text-xl font-bold mb-4 text-center text-light-teal">Key Features</h3>
+                        <div class="space-y-3 flex flex-col items-center" id="key-features">
+                            <div class="feature-item flex items-center bg-light-teal text-white px-4 py-3 rounded-full transition-all duration-500 w-[550px]" data-delay="0">
+                                <span class="mr-3">✔</span> Experienced & Certified
+                            </div>
+                            <div class="feature-item flex items-center bg-light-teal text-white px-4 py-3 rounded-full transition-all duration-500 w-[450px]" data-delay="200">
+                                <span class="mr-3">✔</span> 24/7 Medical Support
+                            </div>
+                            <div class="feature-item flex items-center bg-light-teal text-white px-4 py-3 rounded-full transition-all duration-500 w-[450px]" data-delay="400">
+                                <span class="mr-3">✔</span> Advanced Technology
+                            </div>
+                            <div class="feature-item flex items-center bg-light-teal text-white px-4 py-3 rounded-full transition-all duration-500 w-[450px]" data-delay="600">
+                                <span class="mr-3">✔</span> Patient-Centric Approach
+                            </div>
+                            <div class="feature-item flex items-center bg-light-teal text-white px-4 py-3 rounded-full transition-all duration-500 w-[450px]" data-delay="800">
+                                <span class="mr-3">✔</span> Seamless Appointments
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Mission Section -->
+    <section class="mission-section px-4 md:px-8 lg:px-16 bg-white">
+        <div class="container mx-auto">
+            <div class="flex flex-col lg:flex-row items-center gap-16">
+                <div class="lg:w-1/2 relative">
+                    <div class="w-full max-w-md lg:max-w-none lg:w-[680px] h-[320px] lg:h-[450px] bg-white rounded-xl shadow-2xl overflow-hidden z-10">
+                        <img src="medicare.png" alt="Medical equipment" class="w-full h-full object-cover">
+                    </div>
+                    <div class="absolute -bottom-6 -right-4 w-52 h-36 lg:w-72 lg:h-52 bg-light-teal rounded-xl shadow-xl overflow-hidden hidden md:block lg:-right-10 lg:-bottom-10 z-20">
+                        <img src="docteam.jpg" alt="Medical team" class="w-full h-full object-cover opacity-100">
+                    </div>
+                </div>
+                <div class="lg:w-1/2 mt-10 lg:mt-0">
+                    <h2 class="text-3xl md:text-4xl lg:text-5xl font-extrabold mb-6 text-primary-blue">Our Mission</h2>
+                    <p class="text-gray-600 mb-8 leading-relaxed">
+                        To provide exceptional healthcare services that exceed patient expectations through innovation, quality care, and a commitment to wellness. We aim to build lasting relationships and create healthcare experiences that enhance lives. Through precision, expertise, and a patient-centric approach, we strive to exceed expectations in every interaction. Our dedication to integrity and excellence drives us to build lasting relationships and a legacy of trust.
+                    </p>
+                    <div class="space-y-4">
+                        <div class="flex items-start text-lg">
+                            <svg class="flex-shrink-0 w-6 h-6 mr-3 text-light-teal mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <span class="font-medium">Fostering Sustainable Health and Well-being</span>
+                        </div>
+                        <div class="flex items-start text-lg">
+                            <svg class="flex-shrink-0 w-6 h-6 mr-3 text-light-teal mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <span class="font-medium">Innovating for Better Healthcare Solutions</span>
+                        </div>
+                        <div class="flex items-start text-lg">
+                            <svg class="flex-shrink-0 w-6 h-6 mr-3 text-light-teal mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <span class="font-medium">Patient-Centric Approach</span>
+                        </div>
+                        <div class="flex items-start text-lg">
+                            <svg class="flex-shrink-0 w-6 h-6 mr-3 text-light-teal mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <span class="font-medium">Building Stronger Health Communities</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+              
+
+
+    <!-- Vision Section -->
+    <section class="vision-section px-4 md:px-8 lg:px-16 bg-grey-150">
+        <div class="container mx-auto">
+            <div class="flex flex-col lg:flex-row-reverse items-center gap-16">
+                <div class="lg:w-1/2 relative">
+                    <div class="w-full max-w-md lg:max-w-none lg:w-[680px] h-[320px] lg:h-[450px] bg-white rounded-xl shadow-2xl overflow-hidden z-10">
+                        <img src="https://media.istockphoto.com/id/1354172627/photo/medical-research-laboratory-portrait-of-a-handsome-male-scientist-using-digital-tablet.jpg?s=612x612&w=0&k=20&c=-XS_A69Cl-IqQDPTFtI8WwhQPjS-lJDzETwMPznq6gA=" alt="Medical research" class="w-full h-full object-cover">
+                    </div>
+
+                    <div class="absolute -bottom-6 -left-4 w-52 h-36 lg:w-72 lg:h-52 bg-gray-400 rounded-xl shadow-xl overflow-hidden hidden md:block lg:-left-10 lg:-bottom-10 z-20">
+                        <img src="https://www.undp.org/sites/g/files/zskgke326/files/2021-06/UNDP-India-2021-COVID19-vaccination-22.jpg" alt="Healthcare innovation" class="w-full h-full object-cover opacity-80">
+                    </div>
+                </div>
+                <div class="lg:w-1/2 mt-10 lg:mt-0">
+                    <h2 class="text-3xl md:text-4xl lg:text-5xl font-extrabold mb-6 text-primary-blue">Our Vision</h2>
+                    <p class="text-gray-600 mb-8 leading-relaxed">
+                        At God's Life Healthcare, our vision is to redefine the future of healthcare through innovation, compassion, and excellence. We aim to create healthcare experiences that not only heal but also contribute to the well-being of individuals and communities. By embracing cutting-edge technology and patient-centered practices, we strive to lead the industry toward a healthier, more connected future. Our focus is on delivering value, quality, and longevity in every patient interaction. Together, we envision a world where healthcare empowers progress and transforms lives.
+                    </p>
+                    <div class="space-y-4">
+                        <div class="flex items-start text-lg">
+                            <svg class="flex-shrink-0 w-6 h-6 mr-3 text-light-teal mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <span class="font-medium">Inspiring Modern Healthcare Solutions</span>
+                        </div>
+                        <div class="flex items-start text-lg">
+                            <svg class="flex-shrink-0 w-6 h-6 mr-3 text-light-teal mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 01118 0z" />
+                            </svg>
+                            <span class="font-medium">Pioneering Sustainable Healthcare</span>
+                        </div>
+                        <div class="flex items-start text-lg">
+                            <svg class="flex-shrink-0 w-6 h-6 mr-3 text-light-teal mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <span class="font-medium">Empowering Communities Through Health Innovation</span>
+                        </div>
+                        <div class="flex items-start text-lg">
+                            <svg class="flex-shrink-0 w-6 h-6 mr-3 text-light-teal mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <span class="font-medium">Leading the Future of Healthcare Solutions</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Team Section -->
+    <section id="team-section" class="min-h-screen flex flex-col lg:flex-row p-0 bg-white">        
+        <div class="lg:w-[30%] flex flex-col justify-center py-4 lg:py-8 px-4 sm:px-6 ml-auto">
+            <div class="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-display font-medium leading-tight">
+                <div id="meet-text" class="text-animate-meet">MEET</div>
+                <div id="our-text" class="text-animate-our text-teal-200 my-1 lg:my-2">OUR</div>
+                <div id="team-text" class="text-animate-team">TEAM</div>
+            </div>
+
+            <div class="mt-8 lg:mt-12 content-fade-in">
+                <p class="font-sans text-base sm:text-lg text-gray-700 max-w-md leading-relaxed">
+                    When you need fast and effective medical services, you can trust our team at God's Life Healthcare.
+                </p>
+            </div>
+        </div>
+
+        <div class="lg:w-[50%] flex flex-col items-center justify-center relative p-0 lg:p-0 mt-0 lg:mt-0 mr-auto">
+            <div id="card-stack" class="relative w-full max-w-2xl h-[500px] flex items-center justify-center">
+                <!-- Cards will be inserted here by JavaScript -->
+            </div>
+
+            <div class="w-full max-w-4xl lg:w-[90%] xl:w-[85%] mt-8 lg:mt-12 flex flex-col items-center content-fade-in">
+                <div class="flex items-center gap-6 mt-4">
+                    <button id="prev-btn" class="nav-arrow w-14 h-14 rounded-full border border-dark-text flex items-center justify-center cursor-pointer transition-all hover:bg-dark-text hover:text-amber-50" aria-label="Previous profile" disabled>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M19 12H5"></path>
+                            <path d="M12 19l-7-7 7-7"></path>
+                        </svg>
+                    </button>
+                    
+                    <span id="page-indicator" class="text-base font-sans text-dark-text px-4 py-2 bg-white/50 rounded-full transition-all duration-300">
+                        1 / 5
+                    </span>
+                    
+                    <button id="next-btn" class="nav-arrow w-14 h-14 rounded-full border border-dark-text flex items-center justify-center cursor-pointer transition-all hover:bg-dark-text hover:text-amber-50" aria-label="Next profile">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M5 12h14"></path>
+                            <path d="M12 5l7 7-7 7"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Detail View Overlay -->
+    <div id="detail-view-overlay">
+        <button id="close-detail-btn" class="close-btn" aria-label="Close detail view">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+        </button>
+        
+        <div class="detail-left" id="detail-left">
+            <img id="detail-image" src="" alt="" style="width: 0; height: 0; opacity: 0;"/>
+        </div>
+
+        <div class="detail-right" id="detail-right">
+            <h1 class="name-container">
+                <span id="detail-first-name" class="name-part name-first"></span>
+                <span id="detail-last-name" class="name-part name-last ml-2"></span>
+            </h1>
+
+            <div id="detail-description-content" class="detail-description-content font-sans text-dark-text">
+                <!-- Content will be inserted here by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Testimonials Section -->
+    <section class="testimonials bg-gray-100">
+        <div class="container mx-auto px-4 max-w-7xl">
+            <div class="section-title text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-custom-dark mb-4">Patient Testimonials</h2>
+                <p class="text-custom-gray text-lg max-w-2xl mx-auto">Hear from our patients who have experienced our exceptional healthcare services</p>
+            </div>
+            
+            <div class="testimonials-container">
+                <div class="testimonial-wrapper stagger-animation">
+                    <div class="testimonial">
+                        <img src="https://randomuser.me/api/portraits/men/42.jpg" alt="Robert Chen">
+                        <p>"The care I received was exceptional. The surgeons were highly skilled, and the hospital facilities were state-of-the-art. The recovery vacation package was the perfect way to recuperate."</p>
+                        <div class="name">Robert Chen</div>
+                        <div class="position">Cardiac Surgery Patient from Australia</div>
+                    </div>
+
+                    <div class="testimonial">
+                        <img src="https://randomuser.me/api/portraits/women/42.jpg" alt="Ching Chang">
+                        <p>"The care I received was exceptional. The surgeons were highly skilled, and the hospital facilities were state-of-the-art. The recovery vacation package was the perfect way to recuperate."</p>
+                        <div class="name">Ching Chang</div>
+                        <div class="position">Cardiac Surgery Patient from Australia</div>
+                    </div>
+                    
+                    <div class="testimonial">
+                        <img src="https://randomuser.me/api/portraits/women/32.jpg" alt="Emma Williams">
+                        <p>"I needed extensive dental work that was too expensive back home. Gods Life arranged everything beautifully - the treatment was top-notch, and I got to explore a beautiful country during my recovery."</p>
+                        <div class="name">Emma Williams</div>
+                        <div class="position">Dental Care Patient from UK</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-custom-dark text-white pt-12 md:pt-16 pb-5">
+        <div class="container mx-auto px-4 max-w-screen-2xl">
+            <div class="footer-content grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-10 mb-8 md:mb-10">
+                <div class="footer-column footer-section">
+                    <h3 class="text-white mb-4 md:mb-5 text-lg md:text-xl">Gods Life Health Care</h3>
+                    <p class="text-custom-light leading-relaxed mb-4 md:mb-5 text-sm md:text-base">Providing world-class medical tourism services with compassion and excellence.</p>
+                    <div class="social-icons flex gap-3 md:gap-4 mt-4 md:mt-5">
+                        <a href="#" class="w-8 h-8 md:w-10 md:h-10 bg-gray-600 rounded-full flex items-center justify-center text-white no-underline transition-colors duration-300 hover:bg-custom-blue text-sm"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="w-8 h-8 md:w-10 md:h-10 bg-gray-600 rounded-full flex items-center justify-center text-white no-underline transition-colors duration-300 hover:bg-custom-blue text-sm"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="w-8 h-8 md:w-10 md:h-10 bg-gray-600 rounded-full flex items-center justify-center text-white no-underline transition-colors duration-300 hover:bg-custom-blue text-sm"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="w-8 h-8 md:w-10 md:h-10 bg-gray-600 rounded-full flex items-center justify-center text-white no-underline transition-colors duration-300 hover:bg-custom-blue text-sm"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+                
+                <div class="footer-column footer-section">
+                    <h3 class="text-white mb-4 md:mb-5 text-lg md:text-xl">Quick Links</h3>
+                    <ul class="list-none">
+                        <li class="mb-2"><a href="#" class="text-custom-light no-underline transition-colors duration-300 hover:text-custom-blue text-sm md:text-base">Home</a></li>
+                        <li class="mb-2"><a href="#" class="text-custom-light no-underline transition-colors duration-300 hover:text-custom-blue text-sm md:text-base">Services</a></li>
+                        <li class="mb-2"><a href="#" class="text-custom-light no-underline transition-colors duration-300 hover:text-custom-blue text-sm md:text-base">Destinations</a></li>
+                        <li class="mb-2"><a href="#" class="text-custom-light no-underline transition-colors duration-300 hover:text-custom-blue text-sm md:text-base">Doctors</a></li>
+                        <li class="mb-2"><a href="#" class="text-custom-light no-underline transition-colors duration-300 hover:text-custom-blue text-sm md:text-base">Testimonials</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-column footer-section">
+                    <h3 class="text-white mb-4 md:mb-5 text-lg md:text-xl">Medical Services</h3>
+                    <ul class="list-none">
+                        <li class="mb-2"><a href="#" class="text-custom-light no-underline transition-colors duration-300 hover:text-custom-blue text-sm md:text-base">Cardiac Surgery</a></li>
+                        <li class="mb-2"><a href="#" class="text-custom-light no-underline transition-colors duration-300 hover:text-custom-blue text-sm md:text-base">Bone Cancer</a></li>
+                        <li class="mb-2"><a href="#" class="text-custom-light no-underline transition-colors duration-300 hover:text-custom-blue text-sm md:text-base">Cosmetic Surgery</a></li>
+                        <li class="mb-2"><a href="#" class="text-custom-light no-underline transition-colors duration-300 hover:text-custom-blue text-sm md:text-base">Dental Care</a></li>
+                        <li class="mb-2"><a href="#" class="text-custom-light no-underline transition-colors duration-300 hover:text-custom-blue text-sm md:text-base">Fertility Treatments</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-column footer-section">
+                    <h3 class="text-white mb-4 md:mb-5 text-lg md:text-xl">Contact Us</h3>
+                    <p class="text-custom-light mb-2 text-sm md:text-base"><i class="fas fa-map-marker-alt mr-2"></i> 123 Medical Avenue, Health City</p>
+                    <p class="text-custom-light mb-2 text-sm md:text-base"><i class="fas fa-phone mr-2"></i> +1 234 567 8900</p>
+                    <p class="text-custom-light mb-2 text-sm md:text-base"><i class="fas fa-envelope mr-2"></i> info@godslifehealthcare.com</p>
+                </div>
+            </div>
+            
+            <div class="copyright text-center pt-5 border-t border-gray-600 text-custom-light text-xs md:text-sm">
+                <p>© 2025 Gods Life Health Care. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile menu toggle
+        document.getElementById('mobile-menu-button').addEventListener('click', function() {
+            document.getElementById('mobile-menu').classList.toggle('active');
+        });
+
+        // Team data
+        const teamData = [
+            {
+                name: "Himanshu Sethi",
+                title: "Founder",
+                specialties: ["Primary Care", "Preventive Care"],
+                image: "https://scontent.fktm24-1.fna.fbcdn.net/v/t51.82787-15/566475975_18373955599148501_7843827167499724617_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=127cfc&_nc_ohc=Kkp1OY746esQ7kNvwEbvjtr&_nc_oc=AdnFz1GxiSlxPzesITTFdCUMimL0LDHLIzbupkiQEtll101yOzhh6Q-hrrWzOJX_qjTaUSnBvwiWEwyZR_qdKcGv&_nc_zt=23&_nc_ht=scontent.fktm24-1.fna&_nc_gid=RjNq8JTeuHj8kR4jnxt9sw&oh=00_AffSREZeK6kIbkROZdSTEFxLJ3XM4DAr3f38JRLBm6a8wA&oe=690AD3DD",
+                alt: "Dr. Himanshu Sethi, MD",
+                description: "Dr. Grossman is a dedicated general practitioner focused on comprehensive health management. His philosophy centers on proactive, preventative care to maintain long-term wellness for all his patients. He holds board certification in Internal Medicine and has been practicing for over a decade in the community.",
+                titleDisplay: "Primary Care & Internal Medicine"
+            },
+            {
+                name: "Punam ",
+                title: "CEO",
+                specialties: ["Obstetrics", "Gynecology", "Women's Health"],
+                image: "https://www.nepalmediciti.com/images/doctors/8790.jpg",
+                alt: "Dr. Punam , MD",
+                description: "Dr. Solverson is a member of the American College of Obstetrics and Gynecology and the Florida Obstetrics and Gynecology Society. She was born in California and speaks fluent English, Vietnamese and Spanish. With 12 years in practice and an average rating of 4.8 on healthgrades, she is a trusted figure in women's healthcare.",
+                titleDisplay: "Obstetrics and Gynecology Specialist"
+            },
+            {
+                name: "Neel Kusum Chaudhary",
+                title: "LPN, Licensed Practical Nurse",
+                specialties: ["Triage", "Patient Education"],
+                image: "https://www.hollywoodreporter.com/wp-content/uploads/2024/02/sq110_s300_f206_2K_final-H-2024.jpg?w=1296&h=730&crop=1",
+                alt: "Neel Kusum Chaudhary, LPN",
+                description: "Jessica is a key member of our triage team, expertly assessing patient needs and providing initial care. She also leads our patient education workshops, empowering individuals to take control of their health.",
+                titleDisplay: "Licensed Practical Nurse"
+            },
+            {
+                name: "Saurav Singha Chaudhari",
+                title: "Digital Media Marketing, IT ",
+                specialties: ["Geriatrics", "Infectious Disease"],
+                image: "https://preview.redd.it/its-sad-to-see-that-people-failed-to-understand-the-message-v0-ss665rtw8m8d1.jpeg?auto=webp&s=c628b954f545c2655be3aa3bbcc2ab935c1a14b8",
+                alt: "Saurav Singha Chaudhari, NP",
+                description: "Hari is a specialized Nurse Practitioner focusing on the unique needs of geriatric patients, ensuring they receive compassionate and effective long-term care. He also works on educating the community about infectious disease prevention.",
+                titleDisplay: "Geriatric & Infectious Disease Care"
+            },
+            
+            {
+                name: "Dr. Binod Chaudhary",
+                title: "Dr., Dermatologist",
+                specialties: ["Dermatology", "Cosmetic Procedures", "Skin Cancer Screening"],
+                image: "https://images.unsplash.com/photo-1622253692010-333f2da6031d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80",
+                alt: "Dr. Binod Chaudhary",
+                description: "A leading dermatologist, Dr. Chaudhary offers a full range of services from medical dermatology to the latest in cosmetic procedures. He is highly skilled in early detection and treatment of skin cancer.",
+                titleDisplay: "Specialist in Dermatology"
+            }
+        ];
+
+        let currentIndex = 0;
+        const totalProfiles = teamData.length;
+
+        const cardStackEl = document.getElementById('card-stack');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const pageIndicator = document.getElementById('page-indicator');
+        const detailOverlayEl = document.getElementById('detail-view-overlay');
+        const detailRightEl = document.getElementById('detail-right');
+        const detailLeftEl = document.getElementById('detail-left');
+        const detailImageEl = document.getElementById('detail-image');
+        const detailFirstNameEl = document.getElementById('detail-first-name');
+        const detailLastNameEl = document.getElementById('detail-last-name');
+        const detailDescriptionEl = document.getElementById('detail-description-content');
+        const closeDetailBtn = document.getElementById('close-detail-btn');
+
+        // Text elements for animation reset
+        const meetText = document.getElementById('meet-text');
+        const ourText = document.getElementById('our-text');
+        const teamText = document.getElementById('team-text');
+
+        let isAnimating = false;
+        const ANIMATION_DURATION = 600; // Duration for card and text animation
+
+        /**
+         * Clears and reapplies CSS classes to re-run the text slide-in animation.
+         */
+        function animateText() {
+            // Force browser to reset animation by removing and reapplying classes
+            meetText.classList.remove('text-animate-meet');
+            ourText.classList.remove('text-animate-our');
+            teamText.classList.remove('text-animate-team');
+
+            // Timeout needed to allow repaint (class removal) before re-addition
+            setTimeout(() => {
+                meetText.classList.add('text-animate-meet');
+                ourText.classList.add('text-animate-our');
+                teamText.classList.add('text-animate-team');
+            }, 50);
+        }
+
+        /**
+         * Creates all the card elements and appends them to the stack container.
+         */
+        function createCardElements() {
+            cardStackEl.innerHTML = ''; // Clear existing content
+            teamData.forEach((profile, index) => {
+                const cardEl = document.createElement('div');
+                cardEl.classList.add('profile-card');
+                cardEl.setAttribute('data-index', index);
+                
+                // Construct specialties HTML as cards
+                const specialtiesHTML = profile.specialties.map(spec => 
+                    `<span class="specialty-card">${spec}</span>`
+                ).join('');
+
+                // Added event listener to the card
+                cardEl.addEventListener('click', (e) => {
+                    // Only allow click if it's the active card
+                    if (cardEl.classList.contains('active')) {
+                        showProfileDetail(e, index);
+                    }
+                });
+
+                cardEl.innerHTML = `
+                    <img src="${profile.image}" alt="${profile.alt}" class="profile-image">
+                    <div class="profile-content">
+                        <h2 class="profile-name text-xl font-bold text-center">${profile.name}</h2>
+                        <p class="profile-title text-gray-600 text-center mt-2">${profile.title}</p>
+                        <div class="profile-specialties flex flex-wrap justify-center gap-2 mt-3">
+                            ${specialtiesHTML}
+                        </div>
+                    </div>
+                `;
+
+                cardStackEl.appendChild(cardEl);
+            });
+            updateCardClasses(); // Apply initial classes
+        }
+
+        
+        function updateCardClasses() {
+            const cards = document.querySelectorAll('.profile-card');
+            
+            // Update button states
+            prevBtn.disabled = currentIndex === 0 || isAnimating;
+            nextBtn.disabled = currentIndex >= totalProfiles - 1 || isAnimating;
+            
+            // Update profile counter
+            pageIndicator.textContent = `${currentIndex + 1} / ${totalProfiles}`;
+            
+            cards.forEach((card, index) => {
+                card.classList.remove('active', 'next-1', 'next-2', 'hidden');
+                
+                if (index === currentIndex) {
+                    card.classList.add('active');
+                } else if (index === currentIndex + 1) {
+                    card.classList.add('next-1');
+                } else if (index === currentIndex + 2) {
+                    card.classList.add('next-2');
+                } else {
+                    card.classList.add('hidden');
+                }
+            });
+        }
+
+        function nextProfile() {
+            if (currentIndex < totalProfiles - 1 && !isAnimating) {
+                isAnimating = true;
+                currentIndex++;
+                updateCardClasses();
+                animateText(); // Re-run text animation
+                
+                setTimeout(() => {
+                    isAnimating = false;
+                    updateCardClasses(); // Re-run to update button disabled state
+                }, ANIMATION_DURATION);
+            }
+        }
+
+        function prevProfile() {
+            if (currentIndex > 0 && !isAnimating) {
+                isAnimating = true;
+                currentIndex--;
+                updateCardClasses();
+                animateText(); // Re-run text animation
+                
+                setTimeout(() => {
+                    isAnimating = false;
+                    updateCardClasses(); // Re-run to update button disabled state
+                }, ANIMATION_DURATION);
+            }
+        }
+
+        // --- NEW FUNCTIONALITY: Detail View Transition ---
+
+        function getProfileImagePosition(cardIndex) {
+            const cardEl = document.querySelector(`.profile-card[data-index="${cardIndex}"]`);
+            if (!cardEl) return null;
+
+            // Get the image element inside the card
+            const imageEl = cardEl.querySelector('.profile-image');
+            if (!imageEl) return null;
+
+            // Get the image's current bounding box relative to the viewport
+            const rect = imageEl.getBoundingClientRect();
+
+            return {
+                top: rect.top,
+                left: rect.left,
+                width: rect.width,
+                height: rect.height,
+                src: imageEl.src,
+                name: cardEl.querySelector('.profile-name').textContent,
+                data: teamData[cardIndex]
+            };
+        }
+
+        function showProfileDetail(event, index) {
+            // Check if any part of the UI is currently animating or overlay is already visible
+            if (isAnimating || detailOverlayEl.classList.contains('visible')) return;
+
+            const positionData = getProfileImagePosition(index);
+            if (!positionData) return;
+            
+            // Disable navigation while the detail view is open
+            isAnimating = true;
+            document.body.style.overflow = 'hidden';
+
+            // --- 1. Initial setup of the detail image (Starting point) ---
+            detailImageEl.src = positionData.src;
+            detailImageEl.style.width = `${positionData.width}px`;
+            detailImageEl.style.height = `${positionData.height}px`;
+            detailImageEl.style.top = `${positionData.top}px`;
+            detailImageEl.style.left = `${positionData.left}px`;
+            detailImageEl.style.opacity = '1';
+            detailImageEl.style.borderRadius = '16px 16px 0 0';
+            detailImageEl.style.boxShadow = '0 15px 40px rgba(0, 0, 0, 0.1)'; // Match card shadow
+
+            // Clear any lingering animation classes
+            detailRightEl.classList.remove('visible-content');
+            detailLeftEl.classList.remove('expanded-image-final');
+            
+            // 2. Show the overlay immediately (Opacity transition will make it fade in)
+            detailOverlayEl.classList.add('visible');
+
+            // 3. Set up the text content immediately
+            const nameParts = positionData.data.name.split(/\s+/);
+            const firstName = nameParts.slice(0, -1).join(' ');
+            const lastName = nameParts[nameParts.length - 1];
+
+            detailFirstNameEl.textContent = firstName;
+            detailLastNameEl.textContent = lastName;
+
+            // Construct specialties HTML as cards for detail view
+            const specialtiesHTML = positionData.data.specialties.map(spec => 
+                `<span class="specialty-card">${spec}</span>`
+            ).join('');
+
+            detailDescriptionEl.innerHTML = `
+                <h2 class="font-display text-2xl font-semibold mb-4 text-white">${positionData.data.titleDisplay}</h2>
+                <div class="mb-4">
+                    ${specialtiesHTML}
+                </div>
+                <p class="text-lg leading-relaxed text-gray-700">${positionData.data.description}</p>
+            `;
+
+         
+            setTimeout(() => {
+                detailLeftEl.classList.add('expanded-image-final');
+                // The transition is handled by the CSS for #detail-image
+                detailImageEl.style.borderRadius = '12px'; // Match final state
+                detailImageEl.style.boxShadow = '0 20px 50px rgba(0, 0, 0, 0.2)'; // Match final state
+            }, 50);
+
+            
+
+            // Set initial off-screen state for the right panel for the slide effect
+            detailRightEl.style.transform = 'translateX(100%)';
+            detailRightEl.style.transition = 'transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.1s';
+            
+            setTimeout(() => {
+                // Animate the right panel back into view
+                detailRightEl.style.transform = 'translateX(0)';
+                // And show the content inside it (which is delayed by CSS)
+                detailRightEl.classList.add('visible-content');
+            }, 100);
+
+            // End animation block
+            setTimeout(() => {
+                // Clean up the temporary transition style on the right panel
+                detailRightEl.style.transition = ''; 
+                isAnimating = false;
+            }, 1000); 
+        }
+
+        function closeProfileDetail() {
+            if (isAnimating) return;
+            isAnimating = true;
+            
+            // 1. Hide text content and start the right panel slide-out
+            detailRightEl.classList.remove('visible-content');
+            detailRightEl.style.transition = 'transform 0.6s cubic-bezier(0.55, 0.085, 0.68, 0.53)';
+            detailRightEl.style.transform = 'translateX(100%)'; // Slide right out
+
+            // 2. Reverse the image transition
+            detailLeftEl.classList.remove('expanded-image-final');
+
+            // Get current active card's image position for the reverse animation
+            const positionData = getProfileImagePosition(currentIndex);
+
+            // Set the detail image back to its original card-image position and style
+            // Note: The smooth transition is handled by the CSS on #detail-image
+            setTimeout(() => {
+                detailImageEl.style.width = `${positionData.width}px`;
+                detailImageEl.style.height = `${positionData.height}px`;
+                detailImageEl.style.top = `${positionData.top}px`;
+                detailImageEl.style.left = `${positionData.left}px`;
+                detailImageEl.style.boxShadow = '0 15px 40px rgba(0, 0, 0, 0.1)';
+                detailImageEl.style.borderRadius = '16px 16px 0 0';
+            }, 200); // Slight delay so the image shrinks after the background transition starts
+
+            // 3. Hide the overlay once the main transitions are complete
+            setTimeout(() => {
+                detailOverlayEl.classList.remove('visible');
+                // Clean up styles
+                detailImageEl.style.opacity = '0';
+                detailImageEl.src = '';
+                
+                // Reset right panel styles
+                detailRightEl.style.transform = 'translateX(0)';
+                detailRightEl.style.transition = '';
+
+                document.body.style.overflow = '';
+                isAnimating = false;
+            }, 1000); // 1000ms is enough to cover both image flight (1s) and overlay fade (0.5s)
+        }
+
+        // --- Event Listeners ---
+        prevBtn.addEventListener('click', prevProfile);
+        nextBtn.addEventListener('click', nextProfile);
+        closeDetailBtn.addEventListener('click', closeProfileDetail);
+
+        // Add keyboard navigation for slider
+        document.addEventListener('keydown', (e) => {
+            if (detailOverlayEl.classList.contains('visible')) {
+                if (e.key === 'Escape') {
+                    closeProfileDetail();
+                }
+            } else {
+                if (e.key === 'ArrowRight') {
+                    nextProfile();
+                } else if (e.key === 'ArrowLeft') {
+                    prevProfile();
+                }
+            }
+        });
+
+        // Key Features Animation
+        function animateKeyFeatures() {
+            const features = document.querySelectorAll('.feature-item');
+            let currentFeature = 0;
+            
+            // Reset all features to inactive state
+            features.forEach(feature => {
+                feature.classList.remove('active');
+                feature.classList.add('inactive');
+            });
+            
+            // Function to activate next feature
+            function activateNextFeature() {
+                // Deactivate current feature
+                if (currentFeature >= 0) {
+                    features[currentFeature].classList.remove('active');
+                    features[currentFeature].classList.add('inactive');
+                }
+                
+                // Move to next feature
+                currentFeature = (currentFeature + 1) % features.length;
+                
+                // Activate new feature
+                features[currentFeature].classList.remove('inactive');
+                features[currentFeature].classList.add('active');
+            }
+            
+            // Start the animation
+            setInterval(activateNextFeature, 1500);
+            
+            // Activate first feature immediately
+            setTimeout(() => {
+                features[0].classList.remove('inactive');
+                features[0].classList.add('active');
+            }, 100);
+        }
+
+        // Testimonial Slider
+        let currentTestimonial = 0;
+        const testimonials = document.querySelectorAll('.testimonial');
+        
+        function showTestimonial(index) {
+            testimonials.forEach((testimonial, i) => {
+                testimonial.style.display = i === index ? 'block' : 'none';
+            });
+        }
+        
+        // Initialize first testimonial
+        showTestimonial(currentTestimonial);
+        
+        // Auto-rotate testimonials
+        setInterval(() => {
+            currentTestimonial = (currentTestimonial + 1) % testimonials.length;
+            showTestimonial(currentTestimonial);
+        }, 5000);
+
+        // Scroll Animation Functionality
+        function isElementInViewport(el) {
+            const rect = el.getBoundingClientRect();
+            return (
+                rect.top <= (window.innerHeight || document.documentElement.clientHeight) * 0.8 &&
+                rect.bottom >= 0
+            );
+        }
+
+        function handleScrollAnimation() {
+            const elements = document.querySelectorAll('.animate-on-scroll, .fade-in-left, .fade-in-right, .scale-in, .footer-section, .stagger-animation');
+            
+            elements.forEach(element => {
+                if (isElementInViewport(element)) {
+                    element.classList.add('animated');
+                }
+            });
+        }
+
+        // Initial setup on window load
+        window.onload = function() {
+            createCardElements(); // Create all cards initially
+            animateText(); // Initial text animation
+            animateKeyFeatures(); // Start key features animation
+            
+            // Initialize scroll animations
+            handleScrollAnimation();
+            window.addEventListener('scroll', handleScrollAnimation);
+        };
+
+    </script>
+</body>
+</html>
